@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Jangan ke Selokan!</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+/*
+VOICE: hangat, santai, cozy — tapi pesannya jelas: limbah rumah tangga punya tujuan masing-masing
+IDEA: halaman belakang rumah di tepi sungai; 5 pos tujuan limbah berjajar, sungai berikan nyawa (ikan)
+PICTURE: kebun cerah, sungai biru di bawah yang makin keruh tiap salah, ikan menghilang
+COLOUR and TYPE: hijau rumput, biru sungai, krem, mint, teal tua; Fredoka bulat
+LAYOUT: adegan penuh, panel krem di kanan (di HP di bawah), kartu detail mint bergelombang
+*/
+:root{color-scheme:light dark;--teal:#1f5f5c;--teal2:#3f8f86;--cream:#fdf3df;--row:#f6e2c0;--rowOn:#d4efd3;--mint:#a8d9b1;--pale:#eef4e2;--coral:#f08a6c;
+--bg:light-dark(#9fcf55,#24402c);--pw:min(42%,520px);--water:#5fb8e6;--water2:#8fd3f2}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--teal);font:600 16px/1.45 Fredoka,system-ui,sans-serif;overflow-x:clip}
+.game{position:relative;height:100vh;min-height:620px;overflow:hidden}
+.scene{position:absolute;inset:0;--cx:calc((100% - var(--pw))/2)}
+.scene>svg{position:absolute;inset:0;width:100%;height:100%}
+.scene::after{content:"";position:absolute;inset:0;pointer-events:none;background:light-dark(transparent,rgba(18,26,60,.42));z-index:5}
+:root[data-theme=light] .scene::after{background:transparent}
+:root[data-theme=dark] .scene::after{background:rgba(18,26,60,.42)}
+.river{position:absolute;left:0;right:0;bottom:0;height:17%;background:linear-gradient(var(--water2),var(--water));transition:background 1s;z-index:1;overflow:hidden}
+.river::before{content:"";position:absolute;left:0;right:0;top:-1px;height:16px;background:radial-gradient(circle at 14px 0,#8fc34a 13px,transparent 14px) 0 0/28px 16px repeat-x}
+.river i.wave{position:absolute;height:4px;border-radius:4px;background:rgba(255,255,255,.55);animation:drift 6s linear infinite}
+.fish{position:absolute;width:46px;height:28px;transition:opacity .6s,transform .6s;animation:swim 4s ease-in-out infinite}
+.fish.gone{opacity:0;transform:translateY(20px) rotate(180deg)}
+.foam{position:absolute;border-radius:50%;background:rgba(255,255,255,.8);opacity:0;transition:opacity 1s}
+@keyframes drift{from{transform:translateX(-60px)}to{transform:translateX(60px)}}
+@keyframes swim{50%{transform:translate(14px,-4px)}}
+.yard{position:absolute;left:var(--cx);bottom:15%;transform:translateX(-50%);display:flex;align-items:flex-end;gap:clamp(4px,1vw,12px);z-index:2}
+.st{border:0;background:none;padding:0;cursor:pointer;width:clamp(56px,7.4vw,100px);display:flex;flex-direction:column;align-items:center;transition:transform .12s;color:var(--teal);font:700 13px/1.1 Fredoka,sans-serif;text-align:center}
+.st svg{width:100%;height:auto;filter:drop-shadow(0 6px 4px rgba(40,60,20,.3))}
+.st span{background:var(--cream);border-radius:8px;padding:2px 6px;margin-top:4px;box-shadow:0 2px 0 rgba(31,95,92,.2)}
+.st:hover,.st:focus-visible{transform:translateY(-6px);outline:none}
+.st:focus-visible span{outline:3px solid #fff}
+.st.gulp{animation:gulp .35s}.st.nope{animation:shake .4s}
+@keyframes gulp{40%{transform:scale(1.08,.92)}}
+.kid{width:clamp(70px,8.5vw,118px);margin-left:6px}
+.kid svg{display:block;width:100%;height:auto;overflow:visible}
+.kid.happy svg{animation:hop .4s}.kid.sad svg{animation:shake .4s}
+@keyframes hop{50%{transform:translateY(-16px)}}@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+#drop{position:absolute;left:var(--cx);top:0;width:84px;height:84px;margin-left:-42px;z-index:3;filter:drop-shadow(0 10px 6px rgba(40,60,20,.35))}
+#drop.fly{transition:left .32s ease-in,top .32s ease-in,transform .32s,opacity .32s;transform:scale(.35);opacity:0}
+#tag{position:absolute;left:var(--cx);transform:translateX(-50%);z-index:3;background:var(--cream);color:var(--teal);padding:3px 14px;border-radius:999px;white-space:nowrap;box-shadow:0 3px 0 rgba(31,95,92,.25)}
+.sig{position:absolute;left:12px;top:10px;z-index:3;background:rgba(253,243,223,.88);color:var(--teal);font-size:13px;padding:3px 12px;border-radius:999px;max-width:calc(100% - 24px)}
+.panel{position:absolute;top:0;right:0;bottom:0;width:var(--pw);background:var(--pale);border-radius:0 0 0 40px;display:flex;flex-direction:column;z-index:6;box-shadow:-6px 0 0 rgba(255,255,255,.35);overflow:auto}
+.head{display:flex;align-items:center;gap:10px;padding:16px 22px 4px}
+.timer{flex:1;height:12px;border-radius:99px;background:#dfe8d2;overflow:hidden}
+.timer i{display:block;height:100%;width:100%;background:var(--teal2);border-radius:99px}
+.coins{display:flex;align-items:center;gap:6px;font-size:30px;font-weight:700}
+.coins svg{width:34px;height:34px}
+.list{margin:4px 18px;padding:10px 12px;border:2px dashed #cfe0c6;border-radius:18px;flex:none}
+.list h2{margin:0 0 2px;text-align:center;font-size:19px;letter-spacing:.04em;font-weight:700}
+.row{display:flex;align-items:center;gap:10px;width:100%;border:2px solid transparent;background:var(--row);color:var(--teal);border-radius:14px;padding:4px 12px 4px 8px;margin-top:6px;font:600 17px Fredoka,sans-serif;cursor:pointer;min-height:46px;text-align:start}
+.row:hover,.row:focus-visible{background:var(--rowOn);border-color:#9fd3a6;outline:none}
+.row.flash-ok{background:#bfe9c2;border-color:#1e8a3a}.row.flash-no{background:#f8cdc4;border-color:#e02a2a}
+.row .k{background:var(--teal2);color:#fff;border-radius:7px;font-size:13px;padding:1px 7px;flex:none}
+.row .ic{width:32px;height:38px;flex:none}
+.row .nm{flex:1;line-height:1.15}.row .pt{display:flex;align-items:center;gap:4px;white-space:nowrap}
+.row .pt svg{width:20px;height:20px}
+.health{display:flex;justify-content:center;align-items:center;gap:8px;margin:10px 0 2px;font-size:14px}
+.health svg{width:30px;height:18px}.health svg.off{opacity:.2}
+.lower{position:relative;flex:1;margin-top:14px;background:var(--mint);padding:26px 18px 74px;border-radius:0 0 0 40px}
+.lower::before{content:"";position:absolute;left:0;right:0;top:-12px;height:14px;background:radial-gradient(circle at 12px 14px,var(--mint) 11px,transparent 12px) 0 0/24px 14px repeat-x}
+.card{position:relative;background:var(--cream);border-radius:22px;padding:14px 16px 14px 122px;min-height:136px;box-shadow:0 4px 0 rgba(31,95,92,.18)}
+.card::after{content:"";position:absolute;inset:7px;border:2px dashed #e7cfa6;border-radius:17px;pointer-events:none}
+.plate{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:100px;height:100px}
+.plate::before{content:"";position:absolute;left:4px;right:4px;bottom:6px;height:24px;border-radius:50%;background:#efe0c4}
+.plate svg{position:relative;width:100%;height:100%}
+.ribbon{display:inline-block;background:var(--teal2);color:#fff;font-size:18px;font-weight:700;padding:3px 18px;margin:0 0 6px;clip-path:polygon(0 0,100% 0,96% 50%,100% 100%,0 100%,4% 50%)}
+.card p{margin:0;font-size:15px;font-weight:500;color:#2b6b66}
+.card p b{font-weight:700}
+.badge{position:absolute;top:-22px;right:-8px;background:#4c7fe0;color:#fff;font-size:22px;font-weight:700;padding:6px 14px;border-radius:14px;transform:rotate(-8deg);box-shadow:0 3px 0 #2f5bb0;white-space:nowrap;z-index:1}
+.pills{position:absolute;left:18px;right:18px;bottom:16px;display:flex;justify-content:space-between;gap:10px}
+.pill{background:var(--teal2);color:#fff;border-radius:999px;padding:7px 16px 7px 8px;display:flex;align-items:center;gap:8px;font-size:17px;white-space:nowrap}
+.pill b{background:#fff;color:var(--teal);min-width:26px;height:26px;padding:0 5px;border-radius:99px;display:grid;place-items:center;font-size:13px}
+.ov{position:absolute;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(40,80,90,.45)}
+.ov[hidden]{display:none}
+.box{position:relative;background:var(--cream);border-radius:26px;padding:28px 22px 22px;max-width:580px;width:100%;max-height:100%;overflow:auto;box-shadow:0 8px 0 rgba(31,95,92,.25);text-align:center}
+.box .ribbon{font-size:26px;padding:6px 30px}
+.box p{font-weight:500;margin:8px 0}
+.picks{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin:12px 0}
+.pick{border:3px solid transparent;background:var(--row);border-radius:18px;padding:8px 10px 6px;cursor:pointer;font:700 17px Fredoka,sans-serif;color:var(--teal);width:116px;min-height:44px}
+.pick svg{display:block;width:70px;margin:0 auto 2px}
+.pick[aria-pressed=true]{border-color:var(--teal2);background:var(--rowOn)}
+.pick:focus-visible{outline:3px solid #f2c200;outline-offset:2px}
+.legend{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin:12px 0;font-size:13px;line-height:1.2}
+.legend span{display:flex;flex-direction:column;align-items:center;gap:4px}
+.legend svg{width:100%;max-width:64px;height:auto}
+.go{border:0;border-radius:999px;background:var(--teal2);color:#fff;font:700 20px Fredoka,sans-serif;padding:10px 28px 10px 12px;min-height:50px;cursor:pointer;display:inline-flex;align-items:center;gap:10px;box-shadow:0 4px 0 var(--teal)}
+.go b{background:#fff;color:var(--teal);width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:14px}
+.go:focus-visible{outline:4px solid #f2c200;outline-offset:3px}
+.big{font-size:52px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px}.big svg{width:48px;height:48px}
+.mist{list-style:none;margin:8px 0 14px;padding:0;text-align:start;font-size:15px;font-weight:500}
+.mist li{background:var(--row);border-radius:12px;padding:8px 12px;margin-top:6px}
+.hint{font-size:14px;color:#5d8b86}
+.credit{margin:16px 0 0!important;padding-top:12px;border-top:2px dashed #e7cfa6;font-size:14px;line-height:1.4;color:#2b6b66}.credit b{font-weight:700}
+@media(max-width:760px){
+ .game{height:auto;min-height:0}
+ .scene{position:relative;height:380px;--cx:50%}
+ .yard{bottom:17%}
+ .st{width:clamp(46px,14vw,70px);font-size:11px}.st span{padding:1px 3px}.kid{width:58px;margin-left:2px}
+ .panel{position:relative;width:auto;border-radius:30px 30px 0 0;margin-top:-26px;overflow:visible}
+ .lower{border-radius:0}
+ .card{padding-left:104px}.plate{width:84px;height:84px}
+ .pill{font-size:15px}
+ .legend{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="game" id="game">
+  <div class="scene" id="scene">
+    <svg viewBox="0 0 1200 675" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <defs>
+        <linearGradient id="gr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b9dc5c"/><stop offset=".55" stop-color="#d9ec6e"/><stop offset="1" stop-color="#8fc34a"/></linearGradient>
+        <radialGradient id="sun" cx=".35" cy=".45" r=".55"><stop offset="0" stop-color="#fffbd0" stop-opacity=".75"/><stop offset="1" stop-color="#fffbd0" stop-opacity="0"/></radialGradient>
+        <g id="bush"><ellipse cx="0" cy="38" rx="62" ry="14" fill="#5d8f2e" opacity=".45"/><circle cx="-30" cy="5" r="34" fill="#6aa83a"/><circle cx="28" cy="6" r="36" fill="#6aa83a"/><circle cx="0" cy="-20" r="40" fill="#86c247"/><circle cx="-24" cy="-14" r="24" fill="#9fd457"/><circle cx="8" cy="-36" r="18" fill="#c6e86f"/><circle cx="30" cy="-8" r="14" fill="#b4dd60"/></g>
+        <g id="tree"><rect x="-14" y="-40" width="28" height="200" rx="8" fill="#7a5233"/><rect x="-14" y="-40" width="9" height="200" fill="#94683f"/><circle cx="0" cy="-60" r="80" fill="#5c9a33"/><circle cx="-40" cy="-90" r="50" fill="#7cb83f"/><circle cx="30" cy="-110" r="45" fill="#9fd457"/></g>
+      </defs>
+      <rect width="1200" height="675" fill="url(#gr)"/>
+      <ellipse cx="900" cy="120" rx="320" ry="80" fill="#a5d052"/>
+      <!-- rumah -->
+      <g transform="translate(60 120)">
+        <path d="M0 110 L120 20 L240 110Z" fill="#c0392b"/><path d="M0 110 L120 20 L240 110" stroke="#922b21" stroke-width="8" fill="none" stroke-linejoin="round"/>
+        <rect x="20" y="105" width="200" height="150" fill="#fdf3df"/><rect x="20" y="105" width="200" height="14" fill="#e7cfa6"/>
+        <rect x="50" y="140" width="50" height="45" rx="4" fill="#8fd3f2" stroke="#7a5233" stroke-width="6"/><path d="M75 140v45M50 162h50" stroke="#7a5233" stroke-width="4"/>
+        <rect x="140" y="160" width="50" height="95" rx="4" fill="#9a6a3c"/><circle cx="180" cy="210" r="4" fill="#f5b041"/>
+        <!-- pipa pembuangan ke sungai -->
+        <path d="M220 230 h40 v250" stroke="#95a5a6" stroke-width="16" fill="none"/>
+      </g>
+      <use href="#tree" x="1100" y="40"/><use href="#tree" x="760" y="-40"/>
+      <g fill="#7b5533"><rect x="420" y="190" width="160" height="10" rx="4"/><rect x="420" y="218" width="160" height="10" rx="4"/><rect x="432" y="176" width="12" height="64" rx="3"/><rect x="560" y="176" width="12" height="64" rx="3"/></g>
+      <!-- jemuran -->
+      <g><rect x="640" y="120" width="8" height="140" fill="#9a6a3c"/><rect x="900" y="110" width="8" height="150" fill="#9a6a3c"/><path d="M644 130 Q774 160 904 120" stroke="#3a3a2a" stroke-width="2" fill="none"/>
+      <path d="M690 140 h34 v40 h-34z" fill="#5dade2"/><path d="M750 148 h40 l-4 46 h-32z" fill="#f5b041"/><path d="M820 146 h30 v34 h-30z" fill="#f08a6c"/></g>
+      <use href="#bush" x="380" y="320"/><use href="#bush" x="980" y="300"/><use href="#bush" x="620" y="350"/><use href="#bush" x="1150" y="420"/>
+      <g fill="#4f8f2c"><path d="M520 470l6-30 6 30zM540 480l5-24 5 24zM860 430l6-28 6 28zM980 500l6-30 6 30z"/></g>
+      <rect width="1200" height="675" fill="url(#sun)"/>
+    </svg>
+    <div class="river" id="river"></div>
+    <div class="sig">Dibuat oleh Jihan Atsilah Siregar · TA KIE Waste Crisis Center</div>
+    <div class="yard" id="yard"></div>
+    <div id="tag"></div>
+    <div id="drop" role="img" aria-label=""></div>
+  </div>
+
+  <aside class="panel">
+    <div class="head">
+      <div class="timer" title="Waktu"><i id="bar"></i></div>
+      <div class="coins"><span id="sc">0</span><svg viewBox="0 0 40 40"><path d="M20 4 C12 16 8 22 8 28 a12 12 0 0 0 24 0 C32 22 28 16 20 4Z" fill="#5fb8e6"/><path d="M14 28 a6 6 0 0 0 6 6" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/></svg></div>
+    </div>
+    <div class="list">
+      <h2>BUANG KE MANA?</h2>
+      <div id="rows"></div>
+      <div class="health" id="health"></div>
+    </div>
+    <div class="lower">
+      <div class="card">
+        <div class="badge" id="badge">+10</div>
+        <div class="plate" id="plate"></div>
+        <div class="ribbon" id="cname">Siap?</div>
+        <p id="ctext">Limbah rumah tangga akan muncul dari atas.</p>
+      </div>
+      <div class="pills"><div class="pill"><b>x</b>Kombo <span id="cb">0</span></div><div class="pill"><b>1-5</b>Pilih</div></div>
+    </div>
+  </aside>
+
+  <div class="ov" id="start">
+    <div class="box">
+      <div class="ribbon">Jangan ke Selokan!</div>
+      <p>Banyak limbah rumah tangga yang tidak boleh masuk got atau sungai. Pilih tujuan yang tepat untuk setiap limbah sebelum jatuh. Kalau salah, sungai makin keruh dan ikannya hilang. Tiga ikan hilang, permainan selesai.</p>
+      <div class="legend" id="legend"></div>
+      <p><b>Pilih jagoanmu:</b></p>
+      <div class="picks" id="picks"></div>
+      <button class="go" id="goBtn"><b>A</b>Mulai main</button>
+      <p class="hint">Klik tujuan atau barisnya, atau tekan 1 · 2 · 3 · 4 · 5</p>
+      <p class="credit">Dikelola dan dibuat oleh <b>Jihan Atsilah Siregar</b><br>Tenaga Ahli Komunikasi, Informasi, Edukasi – Waste Crisis Center</p>
+    </div>
+  </div>
+  <div class="ov" id="end" hidden>
+    <div class="box">
+      <div class="ribbon" id="endTitle">Selesai!</div>
+      <div class="big"><span id="endScore">0</span><svg viewBox="0 0 40 40"><path d="M20 4 C12 16 8 22 8 28 a12 12 0 0 0 24 0 C32 22 28 16 20 4Z" fill="#5fb8e6"/></svg></div>
+      <p id="endLine"></p><p class="hint" id="best"></p>
+      <ul class="mist" id="mist"></ul>
+      <button class="go" id="againBtn"><b>A</b>Main lagi</button>
+      <p class="credit">Dikelola dan dibuat oleh <b>Jihan Atsilah Siregar</b><br>Tenaga Ahli Komunikasi, Informasi, Edukasi – Waste Crisis Center</p>
+    </div>
+  </div>
+</div>
+
+<script>
+{
+const V=b=>`<svg viewBox="0 0 100 110" aria-hidden="true">${b}</svg>`;
+const DEST=[
+ {k:'sal',n:'Saluran Air',s:'Saluran',ic:V('<rect x="22" y="4" width="56" height="34" rx="8" fill="#fdf3df" stroke="#3b2a20" stroke-width="3"/><path d="M50 10 C44 19 41 23 41 27 a9 9 0 0 0 18 0 C59 23 56 19 50 10Z" fill="#3d8fd8"/><rect x="47" y="38" width="6" height="20" fill="#7a5233"/><rect x="10" y="58" width="80" height="44" rx="8" fill="#9aa3a8" stroke="#3b2a20" stroke-width="3"/><rect x="20" y="66" width="60" height="26" rx="4" fill="#4d5656"/><path d="M30 66v26M40 66v26M50 66v26M60 66v26M70 66v26" stroke="#9aa3a8" stroke-width="4"/>')},
+ {k:'tan',n:'Siram Tanaman',s:'Tanaman',ic:V('<path d="M50 50 C30 40 26 20 34 10 C46 18 50 34 50 50Z" fill="#3c9d4f" stroke="#3b2a20" stroke-width="3"/><path d="M50 50 C70 40 76 22 68 12 C56 20 50 34 50 50Z" fill="#5dbb63" stroke="#3b2a20" stroke-width="3"/><path d="M22 52 H78 L70 102 H30Z" fill="#d35400" stroke="#3b2a20" stroke-width="3"/><rect x="18" y="48" width="64" height="12" rx="4" fill="#e67e22" stroke="#3b2a20" stroke-width="3"/>')},
+ {k:'jel',n:'Jeriken Jelantah',s:'Jelantah',ic:V('<path d="M22 30 H66 L80 44 V100 H22Z" fill="#f2c200" stroke="#3b2a20" stroke-width="3" stroke-linejoin="round"/><rect x="62" y="16" width="16" height="14" rx="3" fill="#2c3e50" stroke="#3b2a20" stroke-width="3"/><path d="M30 30 V18 H52 V30" fill="none" stroke="#3b2a20" stroke-width="6"/><path d="M50 50 C43 61 40 66 40 71 a10 10 0 0 0 20 0 C60 66 57 61 50 50Z" fill="#a0522d"/>')},
+ {k:'b3',n:'Dropbox B3',s:'B3',ic:V('<rect x="14" y="20" width="72" height="84" rx="8" fill="#e02a2a" stroke="#3b2a20" stroke-width="3"/><rect x="30" y="28" width="40" height="8" rx="4" fill="#7b1a1a"/><path d="M50 46 L72 86 H28Z" fill="#fff"/><rect x="47" y="58" width="6" height="16" rx="3" fill="#e02a2a"/><circle cx="50" cy="80" r="3.5" fill="#e02a2a"/>')},
+ {k:'bkl',n:'Bengkel / Pengepul Oli',s:'Bengkel',ic:V('<rect x="18" y="22" width="64" height="82" rx="10" fill="#3d6a8a" stroke="#3b2a20" stroke-width="3"/><path d="M18 46h64M18 80h64" stroke="#2c4e66" stroke-width="5"/><ellipse cx="50" cy="22" rx="32" ry="7" fill="#5d8aa8" stroke="#3b2a20" stroke-width="3"/><path d="M38 62 l14-10 a7 7 0 1 1 6 8 l-14 10z" fill="#fdf3df"/>')}];
+const drop='<svg viewBox="0 0 40 40"><path d="M20 4 C12 16 8 22 8 28 a12 12 0 0 0 24 0 C32 22 28 16 20 4Z" fill="#5fb8e6"/></svg>';
+const fishSVG=c=>`<svg viewBox="0 0 46 28"><path d="M4 14 C12 2 30 2 36 14 C30 26 12 26 4 14Z" fill="${c}" stroke="#3b2a20" stroke-width="2"/><path d="M36 14 L45 5 V23Z" fill="${c}" stroke="#3b2a20" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="12" r="2.4" fill="#1a0f0a"/></svg>`;
+const S=b=>`<svg viewBox="0 0 100 100" width="100%" height="100%">${b}</svg>`;
+/* wadah generik */
+const pan=(liq)=>S(`<path d="M16 40 H84 L78 82 C76 88 70 90 64 90 H36 C30 90 24 88 22 82Z" fill="#b2babb" stroke="#3b2a20" stroke-width="3"/><ellipse cx="50" cy="40" rx="34" ry="9" fill="${liq}" stroke="#3b2a20" stroke-width="3"/><path d="M84 46 h12" stroke="#3b2a20" stroke-width="6" stroke-linecap="round"/>`);
+const bucket=(liq,extra='')=>S(`<path d="M20 34 H80 L74 90 H26Z" fill="#5dade2" stroke="#3b2a20" stroke-width="3" stroke-linejoin="round"/><ellipse cx="50" cy="34" rx="30" ry="8" fill="${liq}" stroke="#3b2a20" stroke-width="3"/><path d="M22 34 Q50 0 78 34" stroke="#3b2a20" stroke-width="3" fill="none"/>${extra}`);
+const bottle=(body,cap,label)=>S(`<rect x="40" y="8" width="20" height="12" rx="3" fill="${cap}" stroke="#3b2a20" stroke-width="3"/><path d="M38 20 H62 L70 36 V86 C70 90 66 92 62 92 H38 C34 92 30 90 30 86 V36Z" fill="${body}" stroke="#3b2a20" stroke-width="3" stroke-linejoin="round"/><rect x="34" y="48" width="32" height="22" rx="3" fill="#fff"/>${label||''}`);
+const can=(col,mark)=>S(`<rect x="22" y="22" width="56" height="70" rx="6" fill="${col}" stroke="#3b2a20" stroke-width="3"/><ellipse cx="50" cy="22" rx="28" ry="7" fill="#d5dbdb" stroke="#3b2a20" stroke-width="3"/>${mark}`);
+const ITEMS=[
+ {n:'Air bekas mandi',c:'sal',f:'Air bekas mandi termasuk air limbah rumah tangga biasa. Alirkan ke saluran rumah, idealnya tersambung ke IPAL atau septik komunal.',s:bucket('#d6eaf8','<circle cx="40" cy="30" r="5" fill="#fff"/><circle cx="56" cy="28" r="4" fill="#fff"/>')},
+ {n:'Air bekas cuci piring',c:'sal',f:'Boleh ke saluran, tapi pasang saringan di bak cuci supaya sisa makanan dan lemak tidak ikut menyumbat.',s:pan('#d6eaf8')},
+ {n:'Air pel lantai',c:'sal',f:'Air pel dibuang ke saluran kamar mandi, bukan ke kebun, karena bisa mengandung sabun pembersih.',s:bucket('#a9b7a0')},
+ {n:'Air bekas cuci baju',c:'sal',f:'Buang ke saluran. Pakai deterjen secukupnya: busa deterjen berlebih di sungai bikin ikan susah bernapas.',s:bucket('#eaf2f8','<circle cx="36" cy="30" r="6" fill="#fff" stroke="#aab7b8"/><circle cx="50" cy="27" r="7" fill="#fff" stroke="#aab7b8"/><circle cx="64" cy="31" r="5" fill="#fff" stroke="#aab7b8"/>')},
+ {n:'Air cucian beras',c:'tan',f:'Air cucian beras mengandung nutrisi yang baik untuk tanaman. Siramkan ke pot atau kebun.',s:pan('#fdfefe')},
+ {n:'Air rendaman sayur',c:'tan',f:'Air bekas rendam sayur tanpa sabun aman untuk menyiram tanaman. Hemat air juga!',s:S('<path d="M14 44 H86 C86 72 70 88 50 88 C30 88 14 72 14 44Z" fill="#fdfefe" stroke="#3b2a20" stroke-width="3"/><ellipse cx="50" cy="44" rx="36" ry="9" fill="#d4efdf" stroke="#3b2a20" stroke-width="3"/><path d="M40 40 C36 26 44 18 50 16 C52 26 48 34 40 40Z" fill="#3c9d4f"/><path d="M56 42 C58 30 66 26 72 26 C70 34 64 40 56 42Z" fill="#5dbb63"/>')},
+ {n:'Air bekas cuci buah',c:'tan',f:'Kalau dicuci tanpa sabun, airnya bisa dipakai lagi untuk menyiram tanaman.',s:pan('#e8f8f5')},
+ {n:'Minyak goreng bekas',c:'jel',f:'Jelantah di saluran membeku, menyumbat pipa, dan membentuk lapisan minyak di sungai. Kumpulkan di jeriken dan setor ke pengepul atau bank sampah.',s:pan('#d4a017')},
+ {n:'Minyak sisa menggoreng ikan',c:'jel',f:'Saring dulu remahannya, dinginkan, lalu tuang ke jeriken jelantah. Jangan ke wastafel.',s:S('<ellipse cx="46" cy="58" rx="36" ry="20" fill="#2c3e50" stroke="#3b2a20" stroke-width="3"/><ellipse cx="46" cy="54" rx="30" ry="14" fill="#c9a227"/><path d="M80 56 h16" stroke="#3b2a20" stroke-width="7" stroke-linecap="round"/><path d="M32 52 c6-6 18-6 22 0 c-4 6-16 6-22 0z" fill="#e59866"/>')},
+ {n:'Lemak padat sisa masak',c:'jel',f:'Lemak yang membeku (dari santan, kaldu, gorengan) bisa menggumpal di pipa jadi "gunung lemak". Kerok dan kumpulkan bersama jelantah.',s:S('<path d="M18 44 H82 L76 84 H24Z" fill="#fdfefe" stroke="#3b2a20" stroke-width="3"/><ellipse cx="50" cy="44" rx="32" ry="9" fill="#f9e79f" stroke="#3b2a20" stroke-width="3"/><circle cx="40" cy="42" r="4" fill="#f4d03f"/><circle cx="58" cy="44" r="5" fill="#f4d03f"/>')},
+ {n:'Sisa cat tembok',c:'b3',f:'Sisa cat mengandung bahan kimia dan logam. Tutup rapat kalengnya dan serahkan ke dropbox atau pengumpul limbah B3.',s:can('#ecf0f1','<path d="M22 40 h56 v20 c-6 6-10 0-14 6 c-4-6-8 2-12-4 c-4 4-8-2-12 2 c-6-2-10 2-18-2z" fill="#5dade2"/>')},
+ {n:'Tiner bekas',c:'b3',f:'Tiner mudah terbakar dan beracun. Jangan dituang ke tanah atau got; simpan di wadah tertutup lalu serahkan ke pengumpul B3.',s:bottle('#d5d8dc','#c0392b','<path d="M50 50 l-8 16 h16z" fill="#e02a2a"/>')},
+ {n:'Racun serangga cair',c:'b3',f:'Sisa pestisida bisa membunuh ikan dan biota air. Jangan dibuang ke saluran; kumpulkan sebagai limbah B3.',s:bottle('#27ae60','#2c3e50','<path d="M42 54 l16 12 M58 54 l-16 12" stroke="#3b2a20" stroke-width="4"/>')},
+ {n:'Termometer raksa pecah',c:'b3',f:'Raksa (merkuri) sangat beracun. Kumpulkan butirannya dengan kertas, masukkan wadah tertutup, serahkan ke pengumpul B3. Jangan disedot atau dibilas.',s:S('<rect x="44" y="10" width="12" height="58" rx="6" fill="#fdfefe" stroke="#3b2a20" stroke-width="3"/><path d="M44 40 L56 46" stroke="#3b2a20" stroke-width="2"/><circle cx="50" cy="76" r="12" fill="#d5dbdb" stroke="#3b2a20" stroke-width="3"/><circle cx="30" cy="86" r="4" fill="#aab7b8"/><circle cx="70" cy="84" r="3" fill="#aab7b8"/><circle cx="62" cy="92" r="2.5" fill="#aab7b8"/>')},
+ {n:'Obat tablet kedaluwarsa',c:'b3',f:'Obat bisa mencemari air dan tanah. Serahkan ke apotek atau dropbox obat/B3, jangan dibuang ke kloset.',s:S('<rect x="22" y="30" width="56" height="44" rx="8" fill="#ecf0f1" stroke="#3b2a20" stroke-width="3"/><g fill="#e74c3c"><circle cx="36" cy="44" r="6"/><circle cx="52" cy="44" r="6"/><circle cx="68" cy="44" r="6" fill="#bdc3c7"/><circle cx="36" cy="60" r="6"/><circle cx="52" cy="60" r="6" fill="#bdc3c7"/><circle cx="68" cy="60" r="6"/></g>')},
+ {n:'Oli bekas motor',c:'bkl',f:'Oli bekas sangat mencemari air tanah. Biarkan diganti di bengkel resmi, atau setor ke bengkel/pengepul oli bekas.',s:S('<path d="M28 30h36l8 10v46H28Z" fill="#34495e" stroke="#3b2a20" stroke-width="3"/><rect x="60" y="18" width="12" height="14" fill="#f39c12" stroke="#3b2a20" stroke-width="3"/><path d="M38 52h24v16H38z" fill="#f39c12"/><path d="M82 60 q6 10 0 14 q-6-4 0-14z" fill="#111"/>')},
+ {n:'Aki bekas',c:'bkl',f:'Aki berisi asam dan timbal. Tukar atau serahkan ke bengkel/toko aki, jangan dibongkar sendiri.',s:S('<rect x="16" y="34" width="68" height="52" rx="6" fill="#2c3e50" stroke="#3b2a20" stroke-width="3"/><rect x="24" y="24" width="12" height="12" fill="#c0392b" stroke="#3b2a20" stroke-width="2"/><rect x="64" y="24" width="12" height="12" fill="#7f8c8d" stroke="#3b2a20" stroke-width="2"/><path d="M26 56 h12 M32 50 v12 M62 56 h12" stroke="#fff" stroke-width="4"/>')},
+ {n:'Minyak rem bekas',c:'bkl',f:'Minyak rem beracun dan merusak cat serta tanah. Biarkan bengkel yang menampung dan mengelolanya.',s:bottle('#f4d03f','#2c3e50','<path d="M40 58 h20" stroke="#3b2a20" stroke-width="4"/>')},
+ {n:'Air radiator bekas',c:'bkl',f:'Cairan radiator (coolant) mengandung zat beracun yang rasanya manis, berbahaya bagi hewan. Serahkan ke bengkel.',s:bottle('#58d68d','#1e8449','<circle cx="50" cy="59" r="6" fill="#1e8449"/>')}
+];
+/* karakter anak Indonesia: boy = Bima, hijab = Laras (berkerudung), girl = Dewi (berkuncir) */
+const kidSVG=g=>{
+ const sk='#c68a5c',hr='#1d1410',ol='#3b2a20',hj=g==='hijab';
+ const bottom=g==='boy'
+  ?'<path d="M32 136 H88 L87 160 H64 L60 150 L56 160 H33Z" fill="#2f4a8a"/>'
+  :hj?'<path d="M32 134 H88 L95 186 H25Z" fill="#2f4a8a"/>'
+  :'<path d="M32 134 H88 L97 166 H23Z" fill="#c0392b"/><path d="M40 136 l-4 30 M60 136 v30 M80 136 l4 30" stroke="#a93226" stroke-width="2"/>';
+ const legs=hj?'':'<rect x="42" y="'+(g==='boy'?156:162)+'" width="13" height="'+(g==='boy'?26:20)+'" rx="5" fill="'+sk+'"/><rect x="65" y="'+(g==='boy'?156:162)+'" width="13" height="'+(g==='boy'?26:20)+'" rx="5" fill="'+sk+'"/><rect x="42" y="176" width="13" height="7" fill="#fff"/><rect x="65" y="176" width="13" height="7" fill="#fff"/>';
+ const hair=g==='boy'
+  ?'<path d="M26 60 C22 24 98 20 95 58 C90 46 80 40 68 42 C60 34 44 36 36 46 C32 50 28 54 26 60Z" fill="'+hr+'"/><path d="M38 44 C46 34 66 32 74 44 C64 40 52 42 44 52Z" fill="'+hr+'"/>'
+  :'<circle cx="20" cy="70" r="12" fill="'+hr+'"/><circle cx="100" cy="70" r="12" fill="'+hr+'"/><path d="M14 74 C10 90 18 100 22 104 C24 92 26 84 24 76Z M106 74 C110 90 102 100 98 104 C96 92 94 84 96 76Z" fill="'+hr+'"/><circle cx="27" cy="64" r="5" fill="#f5b041" stroke="'+ol+'" stroke-width="2"/><circle cx="93" cy="64" r="5" fill="#f5b041" stroke="'+ol+'" stroke-width="2"/><path d="M26 62 C22 24 98 24 94 62 C90 50 84 46 78 46 L74 54 L68 46 L58 56 L54 46 C42 46 32 50 26 62Z" fill="'+hr+'"/>';
+ return `<svg viewBox="0 0 120 200" aria-hidden="true">
+ <ellipse cx="60" cy="193" rx="36" ry="6" fill="rgba(40,60,20,.3)"/>
+ <g stroke="${ol}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round">
+  ${legs}
+  <ellipse cx="48" cy="187" rx="12" ry="6.5" fill="#e94e3b"/><ellipse cx="72" cy="187" rx="12" ry="6.5" fill="#e94e3b"/>
+  ${bottom}
+  <path d="M34 102 Q60 94 86 102 L89 140 H31Z" fill="#fdfdfd"/>
+  <path d="M36 102 L50 99 L54 140 H32Z M84 102 L70 99 L66 140 H88Z" fill="#3c9d4f"/>
+  ${hj?'<path d="M60 20 C28 20 18 50 21 74 C23 96 30 110 24 124 H96 C90 110 97 96 99 74 C102 50 92 20 60 20Z" fill="#d97a8c"/>':''}
+  <path d="M33 104 C25 112 22 126 23 138" stroke-width="14" stroke="${ol}" fill="none"/><path d="M33 104 C25 112 22 126 23 138" stroke-width="9" stroke="${hj?'#fdfdfd':sk}" fill="none"/>
+  <path d="M87 104 C95 112 98 126 97 138" stroke-width="14" stroke="${ol}" fill="none"/><path d="M87 104 C95 112 98 126 97 138" stroke-width="9" stroke="${hj?'#fdfdfd':sk}" fill="none"/>
+  <circle cx="23" cy="142" r="7" fill="${sk}"/><circle cx="97" cy="142" r="7" fill="${sk}"/>
+  ${hj?'':'<rect x="52" y="86" width="16" height="14" fill="'+sk+'"/><circle cx="27" cy="66" r="7" fill="'+sk+'"/><circle cx="93" cy="66" r="7" fill="'+sk+'"/>'}
+  ${hj?'<ellipse cx="60" cy="66" rx="27" ry="28" fill="'+sk+'"/>':'<ellipse cx="60" cy="62" rx="33" ry="31" fill="'+sk+'"/>'}
+  ${hj?'<path d="M32 66 C30 38 90 38 88 66 C84 50 74 44 60 44 C46 44 36 50 32 66Z" fill="#c4677a"/>':hair}
+ </g>
+ <path d="M60 112 c-5 0-8 3-8 7 0 5 5 7 8 9 3-2 8-4 8-9 0-4-3-7-8-7z" fill="none"/>
+ <circle cx="44" cy="114" r="6" fill="#fdf3df"/><path d="M41 117 c0-5 3-8 7-8 0 4-3 8-7 8z" fill="#3c9d4f"/>
+ <path d="M42 58 q6-4 12 0 M66 58 q6-4 12 0" stroke="${hr}" stroke-width="3" fill="none" stroke-linecap="round"/>
+ <ellipse cx="48" cy="68" rx="4.5" ry="5.5" fill="#1a0f0a"/><ellipse cx="72" cy="68" rx="4.5" ry="5.5" fill="#1a0f0a"/>
+ <circle cx="49.5" cy="66" r="1.8" fill="#fff"/><circle cx="73.5" cy="66" r="1.8" fill="#fff"/>
+ <path d="M58 74 q2 2 4 0" stroke="#8a5a3a" stroke-width="2" fill="none" stroke-linecap="round"/>
+ <path d="M52 80 Q60 88 68 80 Z" fill="#7a2e22" stroke="#3b2a20" stroke-width="2" stroke-linejoin="round"/><path d="M55 83 Q60 86 65 83" stroke="#e98a7a" stroke-width="2" fill="none"/>
+ <ellipse cx="40" cy="78" rx="6" ry="3.5" fill="#e0786a" opacity=".5"/><ellipse cx="80" cy="78" rx="6" ry="3.5" fill="#e0786a" opacity=".5"/>
+</svg>`};
+const KIDS={boy:'Bima',hijab:'Laras',girl:'Dewi'};
+const $=id=>document.getElementById(id);
+const dropEl=$('drop'),tag=$('tag'),scene=$('scene'),yard=$('yard'),river=$('river');
+let kidType='boy';
+const destName=k=>DEST.find(d=>d.k===k).n;
+function buildYard(){yard.innerHTML=DEST.map((d,i)=>`<button class="st" id="st-${d.k}" data-k="${d.k}" aria-label="${i+1}. ${d.n}">${d.ic}<span>${d.s}</span></button>`).join('')+`<div class="kid" id="kid">${kidSVG(kidType)}</div>`}
+buildYard();
+$('rows').innerHTML=DEST.map((d,i)=>`<button class="row" id="row-${d.k}" data-k="${d.k}"><span class="k">${i+1}</span><span class="ic">${d.ic}</span><span class="nm">${d.n}</span><span class="pt">${drop}<span class="pv">+10</span></span></button>`).join('');
+$('legend').innerHTML=DEST.map(d=>`<span>${d.ic}${d.n}</span>`).join('');
+$('picks').innerHTML=Object.entries(KIDS).map(([k,n])=>`<button class="pick" data-g="${k}" aria-pressed="${k===kidType}">${kidSVG(k)}${n}</button>`).join('');
+$('picks').addEventListener('click',e=>{const p=e.target.closest('.pick');if(!p)return;kidType=p.dataset.g;document.querySelectorAll('.pick').forEach(x=>x.setAttribute('aria-pressed',x===p));buildYard()});
+/* sungai: gelombang, ikan, busa */
+river.innerHTML=[8,30,52,74].map((x,i)=>`<i class="wave" style="left:${x}%;top:${30+i%2*35}%;width:${40+i*8}px;animation-delay:-${i*1.5}s"></i>`).join('')
+ +[['#f39c12',12,30],['#f08a6c',34,55],['#f4d03f',56,25]].map(([c,x,y],i)=>`<div class="fish" id="fish${i}" style="left:${x}%;top:${y}%;animation-delay:-${i}s">${fishSVG(c)}</div>`).join('')
+ +[[20,40,30],[44,20,22],[66,50,26],[80,30,18]].map(([x,y,r],i)=>`<i class="foam" data-f="${i}" style="left:${x}%;top:${y}%;width:${r}px;height:${r*.6}px"></i>`).join('');
+const WATER=[['#6b5a3a','#8a7a52'],['#7d7a4a','#a39e6a'],['#6fa79a','#9fcdbf'],['#5fb8e6','#8fd3f2']];
+let st={},raf=0,last=0;
+const bag=()=>{const a=ITEMS.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+const pts=()=>10+Math.min(st.combo,9)*2;
+function hud(){
+  $('sc').textContent=st.score;$('cb').textContent=st.combo;
+  $('bar').style.width=(st.time/60*100)+'%';
+  $('health').innerHTML='Sungai: '+[0,1,2].map(i=>fishSVG(['#f39c12','#f08a6c','#f4d03f'][i]).replace('<svg ',`<svg class="${i<st.lives?'':'off'}" `)).join('');
+  [0,1,2].forEach(i=>$('fish'+i).classList.toggle('gone',i>=st.lives));
+  const w=WATER[st.lives];river.style.setProperty('--water',w[0]);river.style.setProperty('--water2',w[1]);
+  document.querySelectorAll('.foam').forEach(f=>f.style.opacity=(3-st.lives)>f.dataset.f%3?1:0);
+  document.querySelectorAll('.pv').forEach(e=>e.textContent='+'+pts());
+}
+function card(it,title,html,badge){$('plate').innerHTML=it?it.s:'';$('cname').textContent=title;$('ctext').innerHTML=html;$('badge').textContent=badge}
+function next(){
+  if(!st.queue.length)st.queue=bag();
+  st.cur=st.queue.pop();st.y=0;st.lock=false;
+  dropEl.className='';dropEl.style.left='';dropEl.innerHTML=st.cur.s;dropEl.setAttribute('aria-label',st.cur.n);tag.textContent=st.cur.n;tag.style.opacity=1;
+  card(st.cur,st.cur.n,'Limbah ini sebaiknya dibuang ke mana?','+'+pts());place();
+}
+function place(){
+  const top=40,end=yard.offsetTop-dropEl.offsetHeight-6;
+  const y=top+st.y*Math.max(0,end-top);dropEl.style.top=y+'px';tag.style.top=Math.max(4,y-32)+'px';
+}
+function bump(el,cls){if(!el)return;el.classList.remove(cls);void el.offsetWidth;el.classList.add(cls);setTimeout(()=>el.classList.remove(cls),450)}
+function judge(k){
+  if(!st.run||st.lock)return;
+  st.lock=true;const it=st.cur,ok=k===it.c,right=destName(it.c);
+  tag.style.opacity=0;
+  if(k){
+    const r=$('row-'+k);r.classList.add(ok?'flash-ok':'flash-no');setTimeout(()=>r.className='row',380);
+    const t=$('st-'+k),tr=t.getBoundingClientRect(),sr=scene.getBoundingClientRect();
+    dropEl.style.left=(tr.left-sr.left+tr.width/2)+'px';dropEl.style.top=(tr.top-sr.top)+'px';
+    bump(t,ok?'gulp':'nope');
+  }else{dropEl.style.top=(river.offsetTop)+'px'}
+  dropEl.classList.add('fly');
+  bump($('kid'),ok?'happy':'sad');
+  if(ok){const p=pts();st.combo++;st.correct++;st.score+=p;card(it,'Tepat! '+right,it.f,'+'+p)}
+  else{st.combo=0;st.lives--;st.miss.push({it,how:k?'ke '+destName(k):'terlewat masuk sungai'});card(it,(k?'Ups, ':'Masuk sungai! ')+'harusnya '+right,`<b>${it.n}</b>: ${it.f}`,'+0')}
+  hud();
+  if(st.lives<=0)return setTimeout(over,900);
+  setTimeout(()=>st.run&&next(),1000);
+}
+function loop(t){
+  const dt=Math.min(.05,(t-last)/1000);last=t;
+  if(st.run){
+    st.time-=dt;
+    if(st.time<=0){st.time=0;hud();return over()}
+    if(!st.lock){st.y+=dt*(.14+(60-st.time)*.005);if(st.y>=1){st.y=1;place();judge(null)}else place()}
+    $('bar').style.width=(st.time/60*100)+'%';
+  }
+  raf=requestAnimationFrame(loop);
+}
+function start(){
+  st={score:0,combo:0,lives:3,time:60,correct:0,miss:[],queue:bag(),run:true,lock:false};
+  $('start').hidden=true;$('end').hidden=true;hud();next();
+  cancelAnimationFrame(raf);last=performance.now();raf=requestAnimationFrame(loop);
+  $('st-sal').focus({preventScroll:true});
+}
+function over(){
+  st.run=false;cancelAnimationFrame(raf);
+  let best=0;try{best=+localStorage.getItem('selokanBest')||0;if(st.score>best)localStorage.setItem('selokanBest',st.score)}catch(e){}
+  $('endTitle').textContent=st.lives<=0?'Sungai tercemar!':'Waktu habis!';
+  $('endScore').textContent=st.score;
+  const tot=st.correct+st.miss.length;
+  $('endLine').textContent=`${KIDS[kidType]} mengarahkan ${st.correct} dari ${tot} limbah dengan benar.`+(st.lives===3?' Sungainya tetap jernih, ikannya selamat!':st.lives>0?' Sungai masih bisa diselamatkan, ayo latihan lagi.':' Ikan-ikan hilang. Coba lagi dan jaga sungainya!');
+  $('best').textContent=st.score>best&&best>0?'Rekor baru!':best?'Rekor terbaikmu: '+Math.max(best,st.score):'';
+  $('mist').innerHTML=st.miss.length?st.miss.map(m=>`<li><b>${m.it.n}</b> → ${destName(m.it.c)} (tadi ${m.how}). ${m.it.f}</li>`).join(''):'<li>Sempurna, tidak ada yang salah!</li>';
+  $('end').hidden=false;$('againBtn').focus({preventScroll:true});
+}
+const pick=e=>{const b=e.target.closest('[data-k]');if(b)judge(b.dataset.k)};
+$('rows').addEventListener('click',pick);yard.addEventListener('click',pick);
+document.addEventListener('keydown',e=>{const i='12345'.indexOf(e.key);if(i>=0&&st.run){e.preventDefault();judge(DEST[i].k)}else if((e.key==='a'||e.key==='A')&&!st.run){e.preventDefault();start()}});
+$('goBtn').addEventListener('click',start);$('againBtn').addEventListener('click',start);
+const ro=new ResizeObserver(()=>{if(st.cur&&!st.lock)place()});ro.observe(scene);
+card(null,'Siap?','Limbah rumah tangga akan muncul dari atas. Pilih salah satu dari 5 tujuan.','+10');
+st={score:0,combo:0,lives:3,time:60};hud();
+}
+</script>
+</body>
+</html>
